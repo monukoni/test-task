@@ -12,9 +12,7 @@ services:
       - NODE_ENV=${ENV}
 
   nginx-proxy:
-    build:
-      context: nginx/
-      dockerfile: Dockerfile
+    image: nginx:1.27
     container_name: nginx-proxy
     ports:
       - 80:80
