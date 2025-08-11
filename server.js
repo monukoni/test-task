@@ -1,4 +1,4 @@
-const BACKGROUND_COLOR = 'purple'; // 'green', 'purple', або 'default'
+const BACKGROUND_COLOR = 'green'; // 'green', 'purple', або 'default'
 
 const express = require('express');
 const path = require('path');
