@@ -19,9 +19,6 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/letsencrypt/live 
       - ./nginx/html:/var/www/html         
-    depends_on:
-      - frontend
-      - certbot
 
   certbot:
     image: certbot/certbot
