@@ -27,4 +27,4 @@ services:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/html:/var/www/html
     entrypoint: >
-      sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/html --deploy-hook 'nginx -s reload'; sleep 12h & wait $${!}; done"
+      sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/html; sleep 12h & wait $${!}; done"
