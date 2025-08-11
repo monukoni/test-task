@@ -1,75 +1,107 @@
 document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
+    const envTitle = document.getElementById('envTitle');
+    const envInfo = document.getElementById('envInfo');
     const greenBtn = document.getElementById('greenBtn');
     const purpleBtn = document.getElementById('purpleBtn');
+    const yellowBtn = document.getElementById('yellowBtn');
+    const blueBtn = document.getElementById('blueBtn');
     const defaultBtn = document.getElementById('defaultBtn');
-    const configBtn = document.getElementById('configBtn');
-    const colorInfo = document.getElementById('colorInfo');
+    const autoBtn = document.getElementById('autoBtn');
 
-    let configColor = null;
+    let currentEnvData = null;
 
-    async function getConfig() {
+    // Функція для отримання інформації про середовище
+    async function getEnvInfo() {
         try {
-            const response = await fetch('/api/config');
+            const response = await fetch('/api/env-info');
             const data = await response.json();
-            configColor = data.backgroundColor;
+            currentEnvData = data;
             
-            const colorNames = {
-                'green': 'Зелений',
-                'purple': 'Фіолетовий', 
-                'default': 'За замовчуванням'
+            // Оновлюємо заголовок з NODE_ENV
+            envTitle.textContent = data.nodeEnv.toUpperCase();
+            
+            const envNames = {
+                'development': 'Розробка',
+                'production': 'Продакшн',
+                'staging': 'Тестування',
+                'test': 'Тести'
             };
             
-            colorInfo.textContent = `Конфігурований колір: ${colorNames[configColor] || configColor}`;
+            const colorNames = {
+                'green': 'зелений',
+                'purple': 'фіолетовий',
+                'yellow': 'жовтий',
+                'blue': 'синій',
+                'default': 'за замовчуванням'
+            };
             
-            const userChoice = localStorage.getItem('userColorChoice');
-            if (!userChoice) {
-                changeBackgroundColor(configColor, false);
+            envInfo.textContent = `Середовище: ${envNames[data.nodeEnv] || data.nodeEnv} (колір: ${colorNames[data.backgroundColor]})`;
+            
+            // Автоматично встановлюємо колір при завантаженні, якщо не було ручного вибору
+            const manualChoice = localStorage.getItem('manualColorChoice');
+            if (!manualChoice || manualChoice === 'auto') {
+                changeBackgroundColor(data.backgroundColor, false);
             }
             
             return data;
         } catch (error) {
-            console.error('Error fetching config:', error);
-            colorInfo.textContent = 'Помилка завантаження конфігурації';
+            console.error('Error fetching env info:', error);
+            envTitle.textContent = 'ERROR';
+            envInfo.textContent = 'Помилка отримання інформації про середовище';
             return null;
         }
     }
 
-    function changeBackgroundColor(color, saveChoice = true) {
-        body.classList.remove('green-background', 'purple-background');
+    // Функція для зміни кольору фону
+    function changeBackgroundColor(color, isManual = true) {
+        // Видаляємо всі класи кольорів
+        body.classList.remove('green-background', 'purple-background', 'yellow-background', 'blue-background');
         
+        // Додаємо потрібний клас
         if (color === 'green') {
             body.classList.add('green-background');
         } else if (color === 'purple') {
             body.classList.add('purple-background');
+        } else if (color === 'yellow') {
+            body.classList.add('yellow-background');
+        } else if (color === 'blue') {
+            body.classList.add('blue-background');
         }
         
-        if (saveChoice) {
+        // Зберігаємо вибір користувача
+        if (isManual) {
             localStorage.setItem('backgroundColor', color);
-            localStorage.setItem('userColorChoice', 'true');
+            localStorage.setItem('manualColorChoice', color);
         }
     }
 
+    // Обробники подій для кнопок
     greenBtn.addEventListener('click', () => changeBackgroundColor('green'));
     purpleBtn.addEventListener('click', () => changeBackgroundColor('purple'));
+    yellowBtn.addEventListener('click', () => changeBackgroundColor('yellow'));
+    blueBtn.addEventListener('click', () => changeBackgroundColor('blue'));
     defaultBtn.addEventListener('click', () => changeBackgroundColor('default'));
     
-    configBtn.addEventListener('click', () => {
-        if (configColor) {
-            changeBackgroundColor(configColor);
-            localStorage.removeItem('userColorChoice'); 
+    autoBtn.addEventListener('click', () => {
+        if (currentEnvData) {
+            changeBackgroundColor(currentEnvData.backgroundColor);
+            localStorage.setItem('manualColorChoice', 'auto');
         }
     });
 
+    // Відновлення збереженого кольору при завантаженні
     const savedColor = localStorage.getItem('backgroundColor');
-    const userChoice = localStorage.getItem('userColorChoice');
+    const manualChoice = localStorage.getItem('manualColorChoice');
     
-    if (savedColor && userChoice) {
+    if (savedColor && manualChoice && manualChoice !== 'auto') {
         changeBackgroundColor(savedColor, false);
     }
 
-    getConfig();
+    // Завантаження інформації про середовище
+    getEnvInfo();
 
+    // Додаємо анімацію появи
     const container = document.querySelector('.container');
     container.style.opacity = '0';
     container.style.transform = 'translateY(20px)';
