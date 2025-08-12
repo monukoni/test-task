@@ -1,29 +1,5 @@
-version: '3'
 
 services:
-  frontend-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ${FRONTEND_DOMAIN}-dev
-    networks:
-      - web
-    ports:
-      - ${FRONTEND_PORT}
-    environment:
-      - NODE_ENV=development
-
-  frontend-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ${FRONTEND_DOMAIN}-prod
-    networks:
-      - web
-    ports:
-      - ${FRONTEND_PORT}
-    environment:
-      - NODE_ENV=production
 
   nginx-proxy:
     image: nginx:1.27
