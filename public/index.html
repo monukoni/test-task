@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello SPA</title>
+    <title>NODE_ENV App</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>PROD</h1>
-        <p>Вітаємо у простому SPA додатку</p>
+        <h1 id="envTitle">Завантаження...</h1>
+        <p>Колір фону залежить від NODE_ENV</p>
         
-        <div class="config-info">
-            <p id="colorInfo">Завантаження конфігурації...</p>
+        <div class="env-info">
+            <p id="envInfo">Завантаження інформації про середовище...</p>
         </div>
         
         <div class="color-controls">
             <h2>Змінити колір фону:</h2>
-            <button id="greenBtn" class="color-btn green-btn">Зелений</button>
-            <button id="purpleBtn" class="color-btn purple-btn">Фіолетовий</button>
+            <button id="greenBtn" class="color-btn green-btn">Зелений (development)</button>
+            <button id="purpleBtn" class="color-btn purple-btn">Фіолетовий (production)</button>
+            <button id="yellowBtn" class="color-btn yellow-btn">Жовтий (staging)</button>
+            <button id="blueBtn" class="color-btn blue-btn">Синій (test)</button>
             <button id="defaultBtn" class="color-btn default-btn">За замовчуванням</button>
-            <button id="configBtn" class="color-btn config-btn">Конфігурований колір</button>
+            <button id="autoBtn" class="color-btn auto-btn">Автоматично по NODE_ENV</button>
         </div>
     </div>
     
