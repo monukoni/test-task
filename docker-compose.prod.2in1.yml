@@ -1,0 +1,14 @@
+services:
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${FRONTEND_DOMAIN}-prod
+    networks:
+      - web
+    environment:
+      - NODE_ENV=production
+
+networks:
+  web: 
+    external: true
