@@ -6,8 +6,6 @@ services:
     container_name: ${FRONTEND_DOMAIN}-dev
     networks:
       - web
-    ports:
-      - 3001:${FRONTEND_PORT}
     environment:
       - NODE_ENV=development
 
