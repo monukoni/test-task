@@ -1,9 +1,9 @@
-name: Deploy dev environment
+name: Deploy dev-2in1 environment
 run-name: ${{ github.actor }} pushed new update
 on:
     push:
         branches:
-            - 'dev'
+            - 'dev-2in1'
     workflow_dispatch:
 
 jobs:
