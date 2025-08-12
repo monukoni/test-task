@@ -122,7 +122,7 @@
           -v "$(pwd)/nginx/html:/var/www/html" \
           certbot/certbot certonly --webroot -w /var/www/html \
           -d {{ domain }} --email {{ email }} --agree-tos --no-eff-email \
-          --force-renewal --non-interactive
+          --keep-until-expiring --non-interactive
       when:
         - git_repo | length > 0
         - domain | length > 0
