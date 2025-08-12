@@ -1,0 +1,14 @@
+services:
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${FRONTEND_DOMAIN}-dev
+    networks:
+      - web
+    environment:
+      - NODE_ENV=development
+
+networks:
+  web: 
+    external: true
