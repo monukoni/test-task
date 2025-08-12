@@ -1,0 +1,33 @@
+name: Deploy dev environment
+run-name: ${{ github.actor }} pushed new update
+on:
+    push:
+        branches:
+            - 'dev'
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-24.04
+        steps:
+          - uses: actions/checkout@v4
+          - name: set up secrets
+            run: |
+                echo "${{ secrets.DOT_ENV }}" > .env
+                set -a && source .env && set +a
+          - name: set up inventory.ini
+            run: |
+                echo "${{ secrets.INVENTORY_INI }}" > inventory.ini
+          - name: set up ssh key
+            run: |
+                echo "${{ secrets.SSH_KEY }}" > ~/.ssh/todo-test.pem
+          - name: install Ansibles
+            run: |
+                sudo apt update
+                sudo apt install software-properties-common
+                sudo add-apt-repository --yes --update ppa:ansible/ansible
+                sudo apt install ansible
+          - name: deploy dev to cloud
+            run: |
+                ansible-playbook -i inventory.ini deploy-ansible.yml -v
+            
