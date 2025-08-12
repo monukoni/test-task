@@ -101,11 +101,11 @@
         - git_repo | length > 0
         - env_file.stat.exists
 
-    - name: Switch to dev branch
+    - name: Switch to dev-2in1 branch
       git:
         repo: "{{ git_repo }}"
         dest: "/tmp/{{ project_dir }}"
-        version: dev
+        version: dev-2in1
       when: git_repo | length > 0
 
     - name: Start final Docker Compose services
