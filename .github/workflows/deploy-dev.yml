@@ -20,7 +20,7 @@ jobs:
                 echo "${{ secrets.INVENTORY_INI }}" > inventory.ini
           - name: set up ssh key
             run: |
-                echo "${{ secrets.SSH_KEY }}" > ~/.ssh/todo-test.pem
+                echo "${{ secrets.SSH_KEY }}" > ssh-key.pem
           - name: install Ansibles
             run: |
                 sudo apt update
