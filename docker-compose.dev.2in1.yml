@@ -1,0 +1,16 @@
+services:
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${FRONTEND_DOMAIN}-prod
+    networks:
+      - web
+    ports:
+      - 3000:${FRONTEND_PORT}
+    environment:
+      - NODE_ENV=production
+
+networks:
+  web: 
+    external: true

@@ -111,7 +111,7 @@
     - name: Start final Docker Compose services
       shell: |
         cd /tmp/{{ project_dir }}
-        docker compose -f docker-compose.2in1.yml run frontend-dev -d --build
+        docker compose -f docker-compose.dev.2in1.yml up -d --build
       when: git_repo | length > 0
 
   handlers:
