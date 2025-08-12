@@ -30,5 +30,6 @@ jobs:
                 sudo apt install ansible
           - name: deploy dev to cloud
             run: |
+                set -a && source .env && set +a
                 ansible-playbook -i inventory.ini ansible-setup.yml -vvv
             
