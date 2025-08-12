@@ -1,0 +1,4 @@
+services:
+  nginx-proxy:
+    volumes:
+      - ./nginx/nginx.2in1.init.conf:/etc/nginx/nginx.conf:ro
