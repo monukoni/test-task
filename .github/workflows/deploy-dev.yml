@@ -14,7 +14,6 @@ jobs:
           - name: set up secrets
             run: |
                 echo "${{ secrets.DOT_ENV }}" > .env
-                set -a && source .env && set +a
           - name: set up inventory.ini
             run: |
                 echo "${{ secrets.INVENTORY_INI }}" > inventory.ini
@@ -31,5 +30,5 @@ jobs:
           - name: deploy dev to cloud
             run: |
                 set -a && source .env && set +a
-                ansible-playbook -i inventory.ini ansible-setup.yml -vvv
+                ansible-playbook -i inventory.ini ansible-setup.yml
             
