@@ -6,8 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ${FRONTEND_DOMAIN}-dev
+    networks:
+      - web
     ports:
-      - 3000:${FRONTEND_PORT}
+      - ${FRONTEND_PORT}
     environment:
       - NODE_ENV=development
 
@@ -16,14 +18,18 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ${FRONTEND_DOMAIN}-prod
+    networks:
+      - web
     ports:
-      - 3001:${FRONTEND_PORT}
+      - ${FRONTEND_PORT}
     environment:
       - NODE_ENV=production
 
   nginx-proxy:
     image: nginx:1.27
     container_name: nginx-proxy
+    networks:
+      - web
     ports:
       - 80:80
       - 443:443
@@ -35,8 +41,15 @@ services:
   certbot:
     image: certbot/certbot
     container_name: certbot
+    networks:
+      - web
     volumes:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/html:/var/www/html
     entrypoint: >
       sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/html; sleep 12h & wait $${!}; done"
+
+
+networks:
+  web: 
+    external: true

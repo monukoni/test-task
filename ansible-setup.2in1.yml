@@ -1,0 +1,121 @@
+- name: Deploy Docker application with SSL certificates
+  hosts: all
+  become: yes
+  vars:
+    git_repo: "{{ git_repo_var | default(lookup('env', 'GIT_REPO')) }}"
+    domain: "{{ domain_var | default(lookup('env', 'DOMAIN')) }}"
+    email: "{{ email_var | default(lookup('env', 'EMAIL')) }}"
+    project_dir: "test-task"
+
+  tasks:
+    - name: Check if Docker is installed
+      command: docker -v
+      register: docker_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install Docker if not present
+      block:
+        - name: Update DNF packages
+          dnf:
+            name: "*"
+            state: latest
+            update_cache: yes
+
+        - name: Remove old Docker packages
+          dnf:
+            name:
+              - docker
+              - docker-client
+              - docker-client-latest
+              - docker-common
+              - docker-latest
+              - docker-latest-logrotate
+              - docker-logrotate
+              - docker-engine
+            state: absent
+
+        - name: Install DNF plugins core
+          dnf:
+            name: dnf-plugins-core
+            state: present
+
+        - name: Add Docker CE repository
+          command: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+        - name: Fix repository for CentOS 9
+          replace:
+            path: /etc/yum.repos.d/docker-ce.repo
+            regexp: '\$releasever'
+            replace: '9'
+
+        - name: Install Docker packages
+          dnf:
+            name:
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
+              - docker-buildx-plugin
+              - docker-compose-plugin
+            state: present
+
+        - name: Start and enable Docker service
+          systemd:
+            name: docker
+            state: started
+            enabled: yes
+      when: docker_check.rc == 127
+
+
+    - name: Check if Git is installed
+      command: git -v
+      register: git_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install Git if not present
+      dnf:
+        name: git
+        state: present
+      when: git_check.rc != 0
+
+    - name: Clone Git repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: "/tmp/{{ project_dir }}"
+        force: yes
+      when: git_repo | length > 0
+
+    - name: Check if .env file exists
+      stat:
+        path: .env
+      register: env_file
+      delegate_to: localhost
+
+    - name: Move .env file to project directory
+      copy:
+        src: .env
+        dest: "/tmp/{{ project_dir }}/.env"
+        backup: yes
+      when:
+        - git_repo | length > 0
+        - env_file.stat.exists
+
+    - name: Switch to dev branch
+      git:
+        repo: "{{ git_repo }}"
+        dest: "/tmp/{{ project_dir }}"
+        version: dev
+      when: git_repo | length > 0
+
+    - name: Start final Docker Compose services
+      shell: |
+        cd /tmp/{{ project_dir }}
+        docker compose run frontend-dev -d --build
+      when: git_repo | length > 0
+
+  handlers:
+    - name: restart docker
+      systemd:
+        name: docker
+        state: restarted
